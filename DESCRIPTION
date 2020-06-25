@@ -20,3 +20,5 @@ Suggests:
     testthat,
     withr,
     rlang
+URL: https://github.com/zkamvar/znksillysnail
+BugReports: https://github.com/zkamvar/znksillysnail/issues
