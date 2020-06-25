@@ -17,6 +17,7 @@ knitr::opts_chunk$set(
 # znktest
 
 <!-- badges: start -->
+[![R build status](https://github.com/zkamvar/znksillysnail/workflows/R-CMD-check/badge.svg)](https://github.com/zkamvar/znksillysnail/actions)
 <!-- badges: end -->
 
 

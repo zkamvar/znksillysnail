@@ -5,13 +5,17 @@
 
 <!-- badges: start -->
 
+[![R build
+status](https://github.com/zkamvar/znksillysnail/workflows/R-CMD-check/badge.svg)](https://github.com/zkamvar/znksillysnail/actions)
 <!-- badges: end -->
 
 This package documents a strange behavior between {reticulate}, {knitr},
-{withr}, and {testthat}. i I was testing
-[{dovetail}](https://github.com/carpentries/dovetail) and noticed that
-there were issues in accessing `reticulate::py` in a knitr document
-rendered within a test. This package is an attempt at a reprex.
+{withr}, and {testthat}.
+
+I was testing [{dovetail}](https://github.com/carpentries/dovetail) and
+noticed that there were issues in accessing `reticulate::py` in a knitr
+document rendered within a test loaded in an interactive environment.
+This package is an attempt at a reprex.
 
 ## The setup
 
@@ -38,7 +42,7 @@ This process errors when the package is loaded with devtools:
 
 ``` r
 devtools::load_all()
-#> Loading znktest
+#> Loading znksillysnail
 py1 <- provision_jekyll("simple-python.Rmd")
 #> Setting deferred event(s) on global environment.
 #>   * Execute (and clear) with `deferred_run()`.
@@ -47,31 +51,31 @@ knit_jekyll(py1)
 #> 
 #> 
 #> processing file: _episodes_rmd/simple-python.Rmd
-#>   |                                                                              |                                                                      |   0%  |                                                                              |..........                                                            |  14%
+#>   |                                                                                                                 |                                                                                                         |   0%  |                                                                                                                 |...............                                                                                          |  14%
 #>   ordinary text without R code
 #> 
-#>   |                                                                              |....................                                                  |  29%
+#>   |                                                                                                                 |..............................                                                                           |  29%
 #> label: setup (with options) 
 #> List of 1
 #>  $ include: logi FALSE
 #> 
-#>   |                                                                              |..............................                                        |  43%
+#>   |                                                                                                                 |.............................................                                                            |  43%
 #>   ordinary text without R code
 #> 
-#>   |                                                                              |........................................                              |  57%
+#>   |                                                                                                                 |............................................................                                             |  57%
 #> label: punk (with options) 
 #> List of 1
 #>  $ engine: chr "python"
 #> 
-#>   |                                                                              |..................................................                    |  71%
+#>   |                                                                                                                 |...........................................................................                              |  71%
 #>   ordinary text without R code
 #> 
-#>   |                                                                              |............................................................          |  86%
+#>   |                                                                                                                 |..........................................................................................               |  86%
 #> label: envir
-#> <environment: 0x5585d04e8c80>
-#>   |                                                                              |......................................................................| 100%
+#> <environment: 0x68ac9c0>
+#>   |                                                                                                                 |.........................................................................................................| 100%
 #>    inline R code fragments
-#> <environment: 0x5585d04e8c80>
+#> <environment: 0x68ac9c0>
 #> Quitting from lines 25-31 (_episodes_rmd/simple-python.Rmd)
 #> Error in eval(parse_only(code), envir = envir): object 'py' not found
 ```
@@ -88,7 +92,7 @@ py1 <- provision_jekyll("simple-python.Rmd")
 #>   * Execute (and clear) with `deferred_run()`.
 #>   * Clear (without executing) with `deferred_clear()`.
 py1
-#> [1] "/tmp/Rtmp6i3ZLl/DIRdc760b36677"
+#> [1] "/tmp/Rtmpl1wCSv/DIR38b7156ea765"
 ```
 
 ``` r
@@ -96,31 +100,31 @@ cat(readLines(knit_jekyll(py1)), sep = "\n")
 
 
 processing file: _episodes_rmd/simple-python.Rmd
-  |                                                                              |                                                                      |   0%  |                                                                              |..........                                                            |  14%
+  |                                                                                                                 |                                                                                                         |   0%  |                                                                                                                 |...............                                                                                          |  14%
   ordinary text without R code
 
-  |                                                                              |....................                                                  |  29%
+  |                                                                                                                 |..............................                                                                           |  29%
 label: setup (with options) 
 List of 1
  $ include: logi FALSE
 
-  |                                                                              |..............................                                        |  43%
+  |                                                                                                                 |.............................................                                                            |  43%
   ordinary text without R code
 
-  |                                                                              |........................................                              |  57%
+  |                                                                                                                 |............................................................                                             |  57%
 label: punk (with options) 
 List of 1
  $ engine: chr "python"
 
-  |                                                                              |..................................................                    |  71%
+  |                                                                                                                 |...........................................................................                              |  71%
   ordinary text without R code
 
-  |                                                                              |............................................................          |  86%
+  |                                                                                                                 |..........................................................................................               |  86%
 label: envir
-<environment: 0x5585d35c4160>
-  |                                                                              |......................................................................| 100%
+<environment: 0x8a67340>
+  |                                                                                                                 |.........................................................................................................| 100%
    inline R code fragments
-<environment: 0x5585d35c4160>
+<environment: 0x8a67340>
 output file: _episodes/simple-python.md
 ```
 
@@ -146,7 +150,7 @@ py$x
 message(capture.output(environment()))
 rlang::trace_back()
 #>      █
-#>   1. ├─rmarkdown::render(...)
+#>   1. ├─rmarkdown::render("README.Rmd")
 #>   2. │ └─knitr::knit(knit_input, knit_output, envir = envir, quiet = quiet)
 #>   3. │   └─knitr:::process_file(text, output)
 #>   4. │     ├─base::withCallingHandlers(...)
@@ -201,7 +205,7 @@ rlang::trace_back()
 ## Inline R code
 
      █ 
-,   1. ├─rmarkdown::render(...) 
+,   1. ├─rmarkdown::render("README.Rmd") 
 ,   2. │ └─knitr::knit(knit_input, knit_output, envir = envir, quiet = quiet) 
 ,   3. │   └─knitr:::process_file(text, output) 
 ,   4. │     ├─base::withCallingHandlers(...) 
