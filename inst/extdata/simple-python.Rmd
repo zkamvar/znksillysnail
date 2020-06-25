@@ -1,0 +1,31 @@
+---
+title: test
+---
+
+```{r setup, include = FALSE}
+library('reticulate')
+knitr::opts_chunk$set(message = FALSE)
+```
+
+## Some python code
+
+```{python punk}
+x = 'This is' + ' some text'
+```
+
+
+## R environment and trace back
+
+```{r envir}
+py$x
+message(capture.output(environment()))
+rlang::trace_back()
+```
+
+## Inline R code
+
+`r message(capture.output(environment()))`
+`r paste(format(rlang::trace_back()), colapse = '\n')` 
+`r py$x`
+
+ 

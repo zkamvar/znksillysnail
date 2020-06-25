@@ -1,0 +1,70 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r upset, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  error = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# znktest
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+
+This package documents a strange behavior between {reticulate}, {knitr}, 
+{withr}, and {testthat}. 
+i
+I was testing [{dovetail}](https://github.com/carpentries/dovetail) and noticed
+that there were issues in accessing `reticulate::py` in a knitr document 
+rendered within a test. This package is an attempt at a reprex.
+
+## The setup
+
+I wanted to test knitting a document using relative paths, so I did the following:
+
+1. set up temporary directory and populate with two folders, one for input, 
+   one for output. This directory would be cleaned up when it's parent process 
+   (the test) finished. 
+2. symlinked/copied the test rmd document into the input folder
+3. use `withr::with_dir()` to test knitting the relative path of the input to the
+   relative path of the output. 
+   
+The above steps are wrapped in two helper functions in 
+`testthat/tests/helper-funs.R`: `provision_jekyll()` and `knit_jekyll()`. 
+
+The Rmarkdown document loaded {reticulate}, assigned a variable with a python
+chunk, shows that variable in both an R chunk and inline chunk.
+
+## The problem
+
+This process errors when the package is loaded with devtools:
+
+```{r dtload}
+devtools::load_all()
+py1 <- provision_jekyll("simple-python.Rmd")
+knit_jekyll(py1)
+```
+
+-----------
+
+When the test helpers a loaded without devtools, they work okay. 
+
+```{r src}
+withr::deferred_run()
+source("tests/testthat/helper-funs.R")
+py1 <- provision_jekyll("simple-python.Rmd")
+py1
+```
+
+```{r res, comment = ""}
+cat(readLines(knit_jekyll(py1)), sep = "\n")
+```
