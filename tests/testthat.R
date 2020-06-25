@@ -1,4 +1,4 @@
 library(testthat)
-library(znktest)
+library(znksillysnail)
 
-test_check("znktest")
+test_check("znksillysnail")

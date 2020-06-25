@@ -2,7 +2,7 @@
 # Load an example file
 example_file <- function(...) {
   # We are not in a knitr document
-  system.file("extdata", ..., package = "znktest")
+  system.file("extdata", ..., package = "znksillysnail")
 }
 
 # Make temp file and clean up afterwards
