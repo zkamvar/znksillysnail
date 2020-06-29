@@ -41,24 +41,25 @@ I wanted to test knitting a document using relative paths, so I did the followin
    relative path of the output. 
    
 The above steps are wrapped in two helper functions in 
-`testthat/tests/helper-funs.R`: `provision_jekyll()` and `knit_jekyll()`. 
+[`testthat/tests/helper-funs.R`](testthat/tests/helper-funs.R):
+`provision_jekyll()` and `knit_jekyll()`. 
 
 The Rmarkdown document loaded {reticulate}, assigned a variable with a python
 chunk, shows that variable in both an R chunk and inline chunk.
 
 ## The problem
 
-This process errors when the package is loaded with devtools:
+This process errors when the package is loaded with {pkgload}:
 
-```{r dtload}
-devtools::load_all()
+```{r plload}
+withr::deferred_run()
+pkgload::load_all()
 py1 <- provision_jekyll("simple-python.Rmd")
 knit_jekyll(py1)
 ```
-
 -----------
 
-When the test helpers a loaded without devtools, they work okay. 
+When the test helpers a loaded without {pkgload}, they work okay. 
 
 ```{r src}
 withr::deferred_run()
@@ -69,4 +70,16 @@ py1
 
 ```{r res, comment = ""}
 cat(readLines(knit_jekyll(py1)), sep = "\n")
+```
+
+Examining the traceback from `rlang::trace_back()` shows the call stack 
+differences for chunk vs inline code:
+
+```{r vbsrc}
+withr::deferred_run()
+pyv <- provision_jekyll("verbose-python.Rmd")
+```
+
+```{r vres, comment = ""}
+cat(readLines(knit_jekyll(pyv)), sep = "\n")
 ```

@@ -17,10 +17,14 @@ x = 'This is' + ' some text'
 
 ```{r envir}
 py$x
+message(capture.output(environment()))
+rlang::trace_back()
 ```
 
 ## Inline R code
 
+`r message(capture.output(environment()))`
+`r paste(format(rlang::trace_back()), colapse = '\n')` 
 `r py$x`
 
  

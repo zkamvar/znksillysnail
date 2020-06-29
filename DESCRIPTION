@@ -20,6 +20,6 @@ Suggests:
     testthat,
     withr,
     rlang,
-    devtools
+    pkgload,
 URL: https://github.com/zkamvar/znksillysnail
 BugReports: https://github.com/zkamvar/znksillysnail/issues

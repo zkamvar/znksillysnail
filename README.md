@@ -30,18 +30,19 @@ following:
     input to the relative path of the output.
 
 The above steps are wrapped in two helper functions in
-`testthat/tests/helper-funs.R`: `provision_jekyll()` and
-`knit_jekyll()`.
+[`testthat/tests/helper-funs.R`](testthat/tests/helper-funs.R):
+`provision_jekyll()` and `knit_jekyll()`.
 
 The Rmarkdown document loaded {reticulate}, assigned a variable with a
 python chunk, shows that variable in both an R chunk and inline chunk.
 
 ## The problem
 
-This process errors when the package is loaded with devtools:
+This process errors when the package is loaded with {pkgload}:
 
 ``` r
-devtools::load_all()
+withr::deferred_run()
+pkgload::load_all()
 #> Loading znksillysnail
 py1 <- provision_jekyll("simple-python.Rmd")
 #> Setting deferred event(s) on global environment.
@@ -51,38 +52,36 @@ knit_jekyll(py1)
 #> 
 #> 
 #> processing file: _episodes_rmd/simple-python.Rmd
-#>   |                                                                                                                 |                                                                                                         |   0%  |                                                                                                                 |...............                                                                                          |  14%
+#>   |                                                                              |                                                                      |   0%  |                                                                              |..........                                                            |  14%
 #>   ordinary text without R code
 #> 
-#>   |                                                                                                                 |..............................                                                                           |  29%
+#>   |                                                                              |....................                                                  |  29%
 #> label: setup (with options) 
 #> List of 1
 #>  $ include: logi FALSE
 #> 
-#>   |                                                                                                                 |.............................................                                                            |  43%
+#>   |                                                                              |..............................                                        |  43%
 #>   ordinary text without R code
 #> 
-#>   |                                                                                                                 |............................................................                                             |  57%
+#>   |                                                                              |........................................                              |  57%
 #> label: punk (with options) 
 #> List of 1
 #>  $ engine: chr "python"
 #> 
-#>   |                                                                                                                 |...........................................................................                              |  71%
+#>   |                                                                              |..................................................                    |  71%
 #>   ordinary text without R code
 #> 
-#>   |                                                                                                                 |..........................................................................................               |  86%
+#>   |                                                                              |............................................................          |  86%
 #> label: envir
-#> <environment: 0x68ac9c0>
-#>   |                                                                                                                 |.........................................................................................................| 100%
+#>   |                                                                              |......................................................................| 100%
 #>    inline R code fragments
-#> <environment: 0x68ac9c0>
-#> Quitting from lines 25-31 (_episodes_rmd/simple-python.Rmd)
+#> Quitting from lines 22-26 (_episodes_rmd/simple-python.Rmd)
 #> Error in eval(parse_only(code), envir = envir): object 'py' not found
 ```
 
 -----
 
-When the test helpers a loaded without devtools, they work okay.
+When the test helpers a loaded without {pkgload}, they work okay.
 
 ``` r
 withr::deferred_run()
@@ -92,7 +91,7 @@ py1 <- provision_jekyll("simple-python.Rmd")
 #>   * Execute (and clear) with `deferred_run()`.
 #>   * Clear (without executing) with `deferred_clear()`.
 py1
-#> [1] "/tmp/Rtmpl1wCSv/DIR38b7156ea765"
+#> [1] "/tmp/RtmpnJbfgd/DIR436864662b4a"
 ```
 
 ``` r
@@ -100,31 +99,29 @@ cat(readLines(knit_jekyll(py1)), sep = "\n")
 
 
 processing file: _episodes_rmd/simple-python.Rmd
-  |                                                                                                                 |                                                                                                         |   0%  |                                                                                                                 |...............                                                                                          |  14%
+  |                                                                              |                                                                      |   0%  |                                                                              |..........                                                            |  14%
   ordinary text without R code
 
-  |                                                                                                                 |..............................                                                                           |  29%
+  |                                                                              |....................                                                  |  29%
 label: setup (with options) 
 List of 1
  $ include: logi FALSE
 
-  |                                                                                                                 |.............................................                                                            |  43%
+  |                                                                              |..............................                                        |  43%
   ordinary text without R code
 
-  |                                                                                                                 |............................................................                                             |  57%
+  |                                                                              |........................................                              |  57%
 label: punk (with options) 
 List of 1
  $ engine: chr "python"
 
-  |                                                                                                                 |...........................................................................                              |  71%
+  |                                                                              |..................................................                    |  71%
   ordinary text without R code
 
-  |                                                                                                                 |..........................................................................................               |  86%
+  |                                                                              |............................................................          |  86%
 label: envir
-<environment: 0x8a67340>
-  |                                                                                                                 |.........................................................................................................| 100%
+  |                                                                              |......................................................................| 100%
    inline R code fragments
-<environment: 0x8a67340>
 output file: _episodes/simple-python.md
 ```
 
@@ -147,7 +144,79 @@ x = 'This is' + ' some text'
 ```r
 py$x
 #> [1] "This is some text"
+```
+
+## Inline R code
+
+This is some text
+
+ 
+````
+
+Examining the traceback from `rlang::trace_back()` shows the call stack
+differences for chunk vs inline code:
+
+``` r
+withr::deferred_run()
+pyv <- provision_jekyll("verbose-python.Rmd")
+#> Setting deferred event(s) on global environment.
+#>   * Execute (and clear) with `deferred_run()`.
+#>   * Clear (without executing) with `deferred_clear()`.
+```
+
+``` r
+cat(readLines(knit_jekyll(pyv)), sep = "\n")
+
+
+processing file: _episodes_rmd/verbose-python.Rmd
+  |                                                                              |                                                                      |   0%  |                                                                              |..........                                                            |  14%
+  ordinary text without R code
+
+  |                                                                              |....................                                                  |  29%
+label: setup (with options) 
+List of 1
+ $ include: logi FALSE
+
+  |                                                                              |..............................                                        |  43%
+  ordinary text without R code
+
+  |                                                                              |........................................                              |  57%
+label: punk (with options) 
+List of 1
+ $ engine: chr "python"
+
+  |                                                                              |..................................................                    |  71%
+  ordinary text without R code
+
+  |                                                                              |............................................................          |  86%
+label: envir
+  |                                                                              |......................................................................| 100%
+   inline R code fragments
+<environment: 0x55822bbe3f18>
+output file: _episodes/verbose-python.md
+```
+
+```` 
+---
+title: test
+---
+
+
+
+## Some python code
+
+```python
+x = 'This is' + ' some text'
+```
+
+
+## R environment and trace back
+
+```r
+py$x
+#> [1] "This is some text"
 message(capture.output(environment()))
+#> <environment: 0x55822bbe3f18>
 rlang::trace_back()
 #>      █
 #>   1. ├─rmarkdown::render("README.Rmd")
@@ -173,9 +242,9 @@ rlang::trace_back()
 #>  21. │                 ├─base::withVisible(eval(expr, envir, enclos))
 #>  22. │                 └─base::eval(expr, envir, enclos)
 #>  23. │                   └─base::eval(expr, envir, enclos)
-#>  24. ├─base::cat(readLines(knit_jekyll(py1)), sep = "\n")
-#>  25. ├─base::readLines(knit_jekyll(py1))
-#>  26. └─global::knit_jekyll(py1)
+#>  24. ├─base::cat(readLines(knit_jekyll(pyv)), sep = "\n")
+#>  25. ├─base::readLines(knit_jekyll(pyv))
+#>  26. └─global::knit_jekyll(pyv)
 #>  27.   ├─withr::with_dir(...)
 #>  28.   │ └─base::force(code)
 #>  29.   └─knitr::knit(...)
@@ -228,9 +297,9 @@ rlang::trace_back()
 ,  21. │                 ├─base::withVisible(eval(expr, envir, enclos)) 
 ,  22. │                 └─base::eval(expr, envir, enclos) 
 ,  23. │                   └─base::eval(expr, envir, enclos) 
-,  24. ├─base::cat(readLines(knit_jekyll(py1)), sep = "\n") 
-,  25. ├─base::readLines(knit_jekyll(py1)) 
-,  26. └─global::knit_jekyll(py1) 
+,  24. ├─base::cat(readLines(knit_jekyll(pyv)), sep = "\n") 
+,  25. ├─base::readLines(knit_jekyll(pyv)) 
+,  26. └─global::knit_jekyll(pyv) 
 ,  27.   ├─withr::with_dir(...) 
 ,  28.   │ └─base::force(code) 
 ,  29.   └─knitr::knit(...) 
